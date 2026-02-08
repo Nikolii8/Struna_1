@@ -6,8 +6,6 @@
 html, body {
   margin: 0;
   padding: 0;
-  height: 100%;
-  width: 100%;
   overflow-x: hidden;
 }
 
@@ -52,13 +50,12 @@ html, body {
 
 .logo {
   justify-self: start;
-  margin-top: 20px;
-  margin-right: 20px;
   font-weight: 1000;
   font-size: 35px;
   color: #33ce7d;
   cursor: pointer;
   font-family: "Podkova", serif;
+  margin-top: 25px;
 }
 
 .nav {
@@ -73,10 +70,10 @@ html, body {
   text-decoration: none;
   font-size: 25px;
   font-weight: 600;
-  margin-top: 20px;
   font-family: "Podkova", serif;
   transition: color 0.2s ease; 
   display: inline-block;
+  margin-top: 25px;
 }
 
 .nav a::after {
@@ -99,6 +96,7 @@ html, body {
 }
 
 .btn {
+  text-decoration: none;
   font-weight: 700;
   border-radius: 999px;
   padding: 10px 18px;
@@ -115,11 +113,14 @@ html, body {
   background: #ffffff;
   color: #33ce7d;
   border-color: #33ce7d;
+  margin-top: 25px;
 }
 
 .btn-solid {/* log in */
   background: #33ce7d;
   color: #ffffff;
+  margin-top: 25px;
+  margin-right: 50px;
 }
 
 .btn-solid:hover {
@@ -149,6 +150,7 @@ html, body {
   box-shadow: 0 8px 20px rgba(138,43,94,0.3);
   border: 2px solid #000000;
 }
+
 .hero {
   position: relative;
   display: grid;
@@ -178,7 +180,7 @@ html, body {
   position: relative;
   z-index: 1;
   max-width: 620px;
-  top: -60px; /* moved down by reducing negative value */
+  top: -100px; /* moved down by reducing negative value */
   font-size: 80px;
   line-height: 1.1;
   font-weight: 800;
@@ -193,10 +195,11 @@ html, body {
 
 .highlight-bg {
   position: absolute;
+  
   left: -20px;
   top: -5px;
-  width: 275px;
-  height: 80px;
+  width: 270px;
+  height: 70px;
   background: #33ce7d;
   border-radius: 0px;
   z-index: -1;
@@ -312,28 +315,16 @@ html, body {
   align-self: flex-start;
 }
 
-.service-media1 img {
+.service-media img {
   width: 100%;
   height: 380px;
   object-fit: cover;
   border-radius: 12px;
   transition: transform 0.4s ease, box-shadow 0.4s ease;
-  margin-right: 100px;
-  
 }
 
-.service-media2 img {
-  width: auto;        /* запазва оригиналната ширина */
-  max-width: 100%;    /* не позволява да излезе извън контейнера */
-  height: auto;       /* автоматична височина за пропорции */
-  border-radius: 12px;
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
-  display: block;
-  margin: 0 auto;     /* центрира изображението */
-}
 .service.service-b{
   grid-template-columns: 1fr 1fr;
-  
 }
 
 
@@ -365,7 +356,8 @@ html, body {
 .arc-green { 
   background: #33ce7d;
   z-index: 1;
-  bottom: -50vw;  /* moved slightly lower than original -40vw */
+  bottom: -50vw;
+  left: 100px;
 }
 
 .arc-pink { 
@@ -373,7 +365,8 @@ html, body {
   z-index: 2;
   width: 100vw;
   height: 100vw;
-  bottom: -45vw; /* slightly lower than original -35vw */
+  bottom: -45vw; 
+  left: 100px;/* slightly lower than original -35vw */
 }
 
 .arc-magenta { 
@@ -381,8 +374,10 @@ html, body {
   z-index: 3;
   width: 90vw;
   height: 90vw;
-  bottom: -40vw; /* slightly lower than original -30vw */
+  bottom: -40vw;
+  left: 100px; /* slightly lower than original -30vw */
 }
+
 
 
 
