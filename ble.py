@@ -5,9 +5,9 @@ import struct
 import math
 import numpy as np
 from scipy.spatial.transform import Rotation as R
-from Struna_1.backyendy import insert_data 
+from backyendy import insert_data
 
-DEVICE_UUID = "00:18:DA:40:6A:49" 
+DEVICE_UUID = "00:18:DA:40:6A:49"
 CHARACTERISTIC_UUID = "6e400003-c352-11e5-953d-0002a5d5c51b"
 
 async def connect():
@@ -41,24 +41,24 @@ def hex_packet(raw_data):
 def angle_output_decode(angle_data_packet):
     if len(angle_data_packet) != 11 or angle_data_packet[0] != 0x55 or angle_data_packet[1] != 0x53:
         raise ValueError("Invalid packet")
-    
+
     roll_raw = struct.unpack('<h', bytes(angle_data_packet[2:4]))[0]  
     pitch_raw = struct.unpack('<h', bytes(angle_data_packet[4:6]))[0]
     yaw_raw = struct.unpack('<h', bytes(angle_data_packet[6:8]))[0]
-    
+
     roll_raw = (roll_raw / 32768) * 180
     pitch_raw = (pitch_raw / 32768) * 180
     yaw_raw = (yaw_raw / 32768) * 180
-   
+
     return [roll_raw, pitch_raw, yaw_raw]
 
 def magic(data1, data2, degrees=True):
     R1 = R.from_euler('xyz', data1, degrees=degrees).as_matrix()
     R2 = R.from_euler('xyz', data2, degrees=degrees).as_matrix()
-    
+
     R_rel = R1.T @ R2
     theta = np.arccos((np.trace(R_rel) - 1) / 2)
-    
+
     return np.degrees(theta) if degrees else theta
 
 async def notification_handler(sender, data):
