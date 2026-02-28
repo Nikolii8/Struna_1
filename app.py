@@ -144,7 +144,8 @@ def uploaded_file(filename):
 # ------------------ DATA ROUTES ------------------
 @app.route('/current-angle')
 def current_angle():
-    data = SelectedInfo.query.get(1)
+    # use session.get to avoid legacy warning
+    data = db.session.get(SelectedInfo, 1)
     if data:
         return jsonify({"angle": round(data.angle, 2)})
     return jsonify({"error": "No data"}), 404
@@ -230,9 +231,29 @@ scheduler.start()
 
 # ------------------ INIT ------------------
 if __name__ == '__main__':
+    from sqlalchemy import inspect
+
     with app.app_context():
+        # ensure tables exist
         db.create_all()
-        if not SelectedInfo.query.get(1):
+
+        # if the selected_info table was created by older code it might lack the
+        # `created` column.  inspect the table and add the column if missing so
+        # the subsequent SELECT does not fail with "column does not exist".
+        insp = inspect(db.engine)
+        if insp.has_table('selected_info'):
+            cols = [c['name'] for c in insp.get_columns('selected_info')]
+            if 'created' not in cols:
+                # add column with default value; PostgreSQL lets us use NOW()
+                from sqlalchemy import text
+                db.session.execute(
+                    text("ALTER TABLE selected_info ADD COLUMN created TIMESTAMP NOT NULL DEFAULT NOW();")
+                )
+                db.session.commit()
+
+        # make sure there is always a row with id=1
+        # use Session.get instead of deprecated Query.get
+        if not db.session.get(SelectedInfo, 1):
             db.session.add(SelectedInfo(id=1, angle=0.0, created=datetime.utcnow()))
             db.session.commit()
 

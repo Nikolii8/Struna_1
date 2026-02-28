@@ -27,14 +27,26 @@ class SelectedInfo(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     angle = db.Column(db.Float, nullable=False)
+    created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
 # ---------------- INIT DATABASE ----------------
 with app.app_context():
     db.create_all()
 
+    # make sure the new `created` column exists if the table pre-dates it
+    from sqlalchemy import inspect, text
+    insp = inspect(db.engine)
+    if insp.has_table('selected_info'):
+        cols = [c['name'] for c in insp.get_columns('selected_info')]
+        if 'created' not in cols:
+            db.session.execute(
+                text("ALTER TABLE selected_info ADD COLUMN created TIMESTAMP NOT NULL DEFAULT NOW();")
+            )
+            db.session.commit()
+
     # гарантира, че има точно 1 ред
-    if not SelectedInfo.query.first():
-        db.session.add(SelectedInfo(id=1, angle=0.0))
+    if not db.session.query(SelectedInfo).first():
+        db.session.add(SelectedInfo(id=1, angle=0.0, created=datetime.utcnow()))
         db.session.commit()
 
 # ---------------- HELPERS ----------------

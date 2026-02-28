@@ -17,7 +17,7 @@ export default function SignupScreen({ navigation }) {
     }
 
     try {
-      const response = await fetch('http://172.20.10.2:5000/signup', {
+      const response = await fetch('http://192.168.1.2:5000/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, birthdate, email, password, confirm_password: confirmPassword })
