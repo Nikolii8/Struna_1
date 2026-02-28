@@ -21,7 +21,7 @@ export default function ProfilePage({ route, navigation }) {
 
   const fetchUserData = async () => {
     try {
-      const res = await fetch(`http://192.168.1.22:5000/users/${userId}`);
+      const res = await fetch(`http://172.20.10.2:5000/users/${userId}`);
       const data = await res.json();
 
       if (!res.ok) {
@@ -33,7 +33,7 @@ export default function ProfilePage({ route, navigation }) {
       setEmail(data.email);
 
       if (data.profile_pic) {
-        setAvatar({ uri: `http://192.168.1.22:5000/uploads/${data.profile_pic}?t=${new Date().getTime()}` });
+        setAvatar({ uri: `http://172.20.10.2:5000/uploads/${data.profile_pic}?t=${new Date().getTime()}` });
       }
     } catch (err) {
       console.log('Fetch user error:', err);
@@ -73,7 +73,7 @@ export default function ProfilePage({ route, navigation }) {
       });
 
       try {
-        const res = await fetch(`http://192.168.1.22:5000/users/${userId}/avatar`, {
+        const res = await fetch(`http://172.20.10.2:5000/users/${userId}/avatar`, {
           method: 'POST',
           body: formData,
         });
@@ -83,7 +83,7 @@ export default function ProfilePage({ route, navigation }) {
         if (!data.success) {
           Alert.alert('Error', 'Failed to upload avatar.');
         } else {
-          setAvatar({ uri: `http://192.168.1.22:5000/uploads/${data.filename}?t=${new Date().getTime()}` });
+          setAvatar({ uri: `http://172.20.10.2:5000/uploads/${data.filename}?t=${new Date().getTime()}` });
         }
 
       } catch (err) {

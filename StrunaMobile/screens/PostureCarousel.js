@@ -14,7 +14,7 @@ import {
 const TOTAL_MINUTES = 1440;
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const BAD_ANGLE_THRESHOLD = 100;
-const BASE_URL = 'http://192.168.1.22:5000';
+const BASE_URL = 'http://172.20.10.2:5000';
 
 export default function PostureCarousel({ navigation, route }) {
   const userId = route?.params?.userId;
