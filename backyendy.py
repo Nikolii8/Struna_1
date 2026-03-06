@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from datetime import datetime, timezone
 
 app = Flask(__name__)
 
@@ -19,7 +19,7 @@ class AllInfo(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     angle = db.Column(db.Float, nullable=False)
-    created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    created = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
 
 
 class SelectedInfo(db.Model):
@@ -27,7 +27,7 @@ class SelectedInfo(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     angle = db.Column(db.Float, nullable=False)
-    created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    created = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
 
 # ---------------- INIT DATABASE ----------------
 with app.app_context():
@@ -46,12 +46,12 @@ with app.app_context():
 
     # гарантира, че има точно 1 ред
     if not db.session.query(SelectedInfo).first():
-        db.session.add(SelectedInfo(id=1, angle=0.0, created=datetime.utcnow()))
+        db.session.add(SelectedInfo(id=1, angle=0.0, created=datetime.now(timezone.utc)))
         db.session.commit()
 
 # ---------------- HELPERS ----------------
 def get_utc_time():
-    return datetime.utcnow()
+    return datetime.now(timezone.utc)
 
 # ---------------- INSERT DATA ----------------
 def insert_data(coefficient):

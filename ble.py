@@ -10,21 +10,12 @@ from backyendy import insert_data
 DEVICE_UUID = "00:18:DA:40:6A:49"
 CHARACTERISTIC_UUID = "6e400003-c352-11e5-953d-0002a5d5c51b"
 
-async def connect():
-    async with BleakClient(DEVICE_UUID) as client:
-        print(f"Connected to {DEVICE_UUID}: {client.is_connected}")
+ble_buffer = bytearray()
 
-asyncio.run(connect())
+angle_packets = []
 
-async def find_services():
-    async with BleakClient(DEVICE_UUID) as client:
-        print(f"Connected to {DEVICE_UUID}")
-        for service in client.services:
-            print(f"\n[Service] {service.uuid}")
-            for char in service.characteristics:
-                print(f"  -> Characteristic: {char.uuid} | Properties: {char.properties}")
-
-asyncio.run(find_services())
+# Reference position for straight/neutral posture (will be set on first run)
+reference_angles = None
 
 def decode_data(raw_data):
     for i in range(len(raw_data) - 10):  
@@ -62,16 +53,68 @@ def magic(data1, data2, degrees=True):
     return np.degrees(theta) if degrees else theta
 
 async def notification_handler(sender, data):
-    angle_packet = decode_data(data)
-    if len(angle_packet) < 2:
-        return
+    global ble_buffer, angle_packets, reference_angles
+    
+    try:
+        
+        ble_buffer.extend(data)
+        
+       
+        while len(ble_buffer) >= 11:
 
-    hihi = angle_output_decode(angle_packet[0])
-    hihi2 = angle_output_decode(angle_packet[1])
-    angle = magic(hihi, hihi2)
+            idx = -1
+            for i in range(len(ble_buffer) - 1):
+                if ble_buffer[i] == 0x55 and ble_buffer[i + 1] == 0x53:
+                    idx = i
+                    break
+            
+            if idx == -1:
 
-    print(f"[BLE] Received coefficient: {angle}")
-    insert_data(angle)
+                ble_buffer = ble_buffer[1:]
+                continue
+            
+            if idx > 0:
+               
+                ble_buffer = ble_buffer[idx:]
+            
+            if len(ble_buffer) < 11:
+               
+                break
+            
+          
+            packet = bytes(ble_buffer[:11])
+            ble_buffer = ble_buffer[11:]
+            
+          
+            try:
+                hihi = angle_output_decode(packet)
+                angle_packets.append(hihi)
+                print(f"[BLE] Roll={hihi[0]:7.2f}°, Pitch={hihi[1]:7.2f}°, Yaw={hihi[2]:7.2f}°")
+                
+              
+                if len(angle_packets) >= 2:
+                    data1 = angle_packets[0]
+                    data2 = angle_packets[1]
+                    
+                    if reference_angles is None:
+                        reference_angles = data2
+                        print(f"[BLE] *** REFERENCE SET ***")
+                        print(f"[BLE] Ref: R={reference_angles[0]:.1f}° P={reference_angles[1]:.1f}° Y={reference_angles[2]:.1f}°")
+                        angle_packets = []
+                        continue
+
+                    angle = magic(reference_angles, data2)
+                    print(f"[BLE] Data1: R={data1[0]:.1f}° P={data1[1]:.1f}° Y={data1[2]:.1f}°")
+                    print(f"[BLE] Data2: R={data2[0]:.1f}° P={data2[1]:.1f}° Y={data2[2]:.1f}°")
+                    print(f"[BLE] >>> Bending angle: {angle:.2f}°")
+                    insert_data(angle)
+                    angle_packets = []
+
+            except ValueError as e:
+                print(f"[BLE] Invalid packet: {e}")
+
+    except Exception as e:
+        print(f"[BLE] Error processing notification: {e}")
 
 async def subscribe():
     async with BleakClient(DEVICE_UUID) as client:
