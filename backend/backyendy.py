@@ -1,13 +1,12 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timezone
+from config import DATABASE_URL
 
 app = Flask(__name__)
 
 # ---------------- DATABASE CONFIG ----------------
-app.config['SQLALCHEMY_DATABASE_URI'] = (
-    'postgresql://nikolii:0884999440@localhost:5432/struna'
-)
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)

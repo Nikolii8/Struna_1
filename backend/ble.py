@@ -89,7 +89,7 @@ async def notification_handler(sender, data):
             try:
                 hihi = angle_output_decode(packet)
                 angle_packets.append(hihi)
-                print(f"[BLE] Roll={hihi[0]:7.2f}°, Pitch={hihi[1]:7.2f}°, Yaw={hihi[2]:7.2f}°")
+                #print(f"[BLE] Roll={hihi[0]:7.2f}°, Pitch={hihi[1]:7.2f}°, Yaw={hihi[2]:7.2f}°")
                 
               
                 if len(angle_packets) >= 2:
@@ -98,14 +98,14 @@ async def notification_handler(sender, data):
                     
                     if reference_angles is None:
                         reference_angles = data2
-                        print(f"[BLE] *** REFERENCE SET ***")
-                        print(f"[BLE] Ref: R={reference_angles[0]:.1f}° P={reference_angles[1]:.1f}° Y={reference_angles[2]:.1f}°")
+                        #print(f"[BLE] *** REFERENCE SET ***")
+                        #print(f"[BLE] Ref: R={reference_angles[0]:.1f}° P={reference_angles[1]:.1f}° Y={reference_angles[2]:.1f}°")
                         angle_packets = []
                         continue
 
                     angle = magic(reference_angles, data2)
-                    print(f"[BLE] Data1: R={data1[0]:.1f}° P={data1[1]:.1f}° Y={data1[2]:.1f}°")
-                    print(f"[BLE] Data2: R={data2[0]:.1f}° P={data2[1]:.1f}° Y={data2[2]:.1f}°")
+                    #print(f"[BLE] Data1: R={data1[0]:.1f}° P={data1[1]:.1f}° Y={data1[2]:.1f}°")
+                    #print(f"[BLE] Data2: R={data2[0]:.1f}° P={data2[1]:.1f}° Y={data2[2]:.1f}°")
                     print(f"[BLE] >>> Bending angle: {angle:.2f}°")
                     insert_data(angle)
                     angle_packets = []
